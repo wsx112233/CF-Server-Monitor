@@ -6,17 +6,19 @@
 
 - <= 2.6.9 版本,使用方式一部署方式，需要在Workers & Pages页面，点击 **Settings**，修改Build configuration的Deploy command为：`npx wrangler deploy --keep-vars`，否则会导致API\_SECRET丢失。旧key可用通过`cat /etc/systemd/system/cf-probe.service`或者`cat /etc/init.d/cf-probe`获取，再重新设置环境变量API\_SECRET（注意是设置顶部的变量和密钥），最后再同步数据。
 
-**当前版本：V2.7.2**
+**当前版本：V2.7.3**
 
+- V2.7.3 新增服务器到期提醒功能，调整后台设置页面布局
 - V2.7.2 新增支持多分区磁盘统计功能以及其他优化，增加[图文教程](https://huilang.me/cf-server-monitor-setup/)
 - V2.7.1 新增国内四线路丢包率监控与历史图表，新增GPU字段与图表展示（GPU暂未测试），后台新增 Cloudflare D1/Workers 每日额度查询功能；
->    升级后请在后台点击 **升级数据库** 并重新安装/升级探针，否则新图表可能提示数据库结构未升级
+
+> 升级后请在后台点击 **升级数据库** 并重新安装/升级探针，否则新图表可能提示数据库结构未升级
 >
->    Linux -> `curl -sL https://你的项目.你的子域.workers.dev/install.sh | bash -s install`
+> Linux -> `curl -sL https://你的项目.你的子域.workers.dev/install.sh | bash -s install`
 >
->    Alpine Linux -> `curl -sL https://你的项目.你的子域.workers.dev/install-alpine.sh | sh -s install`
+> Alpine Linux -> `curl -sL https://你的项目.你的子域.workers.dev/install-alpine.sh | sh -s install`
 >
->    OpenWrt -> `curl -sL https://你的项目.你的子域.workers.dev/install-openwrt.sh | sh -s install`
+> OpenWrt -> `curl -sL https://你的项目.你的子域.workers.dev/install-openwrt.sh | sh -s install`
 
 - V2.7.0 将每日数据清理改为每月1号执行的表轮换任务, 删除旧表将不再扣除D1消耗,前端图表支持查看最长7天的历史数据,优化脚本一键升级功能
 - V2.6.10 修复了方式一部署方式，同步后丢失API\_SECRET的问题
@@ -500,8 +502,9 @@ Windows 系统
 | 任务   | 触发时间          | 说明                                    |
 | ---- | ------------- | ------------------------------------- |
 | 数据轮换 | `* * 1 * *`   | 每月1号UTC 00:00 执行表轮换（删除旧表，重命名当前表，创建新表） |
-| 数据清理 | `* * 8 * *`   | 每月8号UTC 08:00 删除旧表 |
-| 离线检测 | `*/1 * * * *` | 每分钟检测离线节点并发送告警                        |
+| 数据清理 | `* * 8 * *`   | 每月8号UTC 08:00 删除旧表                    |
+| 离线检测 | `*/1 * * * *` | 每分钟检测离线节点并发送告警 |
+| 服务器到期提醒 | `0 12 0 * *` | 每天UTC 12:00 检查服务器到期状态并发送提醒 |
 
 </details>
 
@@ -684,6 +687,7 @@ npm run deploy
 http://localhost:8787/cdn-cgi/handler/scheduled?cron=*+*+1+*+* // 每月一号执行一次
 http://localhost:8787/cdn-cgi/handler/scheduled?cron=*+*+8+*+* // 每月8号执行一次
 http://localhost:8787/cdn-cgi/handler/scheduled?cron=*/1+*+*+*+* // 每分钟执行一次
+http://localhost:8787/cdn-cgi/handler/scheduled?cron=0+12+*+*+* // 每天12点执行一次
 ```
 
 ### 本地测试数据

@@ -42,7 +42,7 @@ jobs:
           # - 每月8号UTC零点：清理旧的 metrics_history_old 表
           # - 每分钟：执行离线节点检测
           [triggers]
-          crons = ["* * 1 * *", "* * 8 * *", "*/1 * * * *"]
+          crons = ["* * 1 * *", "* * 8 * *", "*/1 * * * *", "0 12 * * *"]
 
           [assets]
           directory = "./dist"

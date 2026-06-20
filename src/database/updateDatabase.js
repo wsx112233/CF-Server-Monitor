@@ -332,7 +332,8 @@ export async function cleanupStaleSettings(db) {
       'tg_bot_token',
       'tg_chat_id',
       'last_aggregated_to',
-      'last_cleanup'
+      'last_cleanup',
+      'expire_reminder'
     ];
     const staleKeysWhere = stalePrefixes.map(() => `key LIKE ?`).concat(staleExact.map(() => `key = ?`)).join(' OR ');
     const staleBindings = [...stalePrefixes, ...staleExact];

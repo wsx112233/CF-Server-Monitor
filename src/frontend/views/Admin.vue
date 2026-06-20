@@ -176,33 +176,37 @@
             <div class="settings-section">
               <div class="section-title"><span>▸</span> {{ trans.appearance }}</div>
 
-              <div class="form-group">
-                <label class="form-label">{{ trans.siteTitle }}</label>
-                <input type="text" v-model="settings.site_title" class="form-input" :placeholder="'Cloudflare Server Monitor'">
-              </div>
-
-              <div class="form-group">
-                <label class="form-label">{{ trans.bgImage }}</label>
-                <div class="flex" style="gap:8px;">
-                  <input type="text" v-model="settings.custom_bg" class="form-input flex-1" placeholder="https://...">
-                  <div class="upload-btn-wrapper">
-                    <button class="btn btn-margin-0">📁 {{ trans.upload }}</button>
-                    <input type="file" accept="image/*" @change="uploadBg">
-                  </div>
+              <div class="form-row">
+                <div class="form-group flex-1">
+                  <label class="form-label">{{ trans.siteTitle }}</label>
+                  <input type="text" v-model="settings.site_title" class="form-input" :placeholder="'Cloudflare Server Monitor'">
                 </div>
-                <img v-if="settings.custom_bg" :src="settings.custom_bg" class="bg-preview">
+
+                <div class="form-group  ">
+                  <label class="form-label">{{ trans.bgImage }}</label>
+                  <div class="flex" style="gap:8px;">
+                    <input type="text" v-model="settings.custom_bg" class="form-input flex-1" placeholder="https://...">
+                    <div class="upload-btn-wrapper">
+                      <button class="btn btn-margin-0">📁 {{ trans.upload }}</button>
+                      <input type="file" accept="image/*" @change="uploadBg">
+                    </div>
+                  </div>
+                  <img v-if="settings.custom_bg" :src="settings.custom_bg" class="bg-preview">
+                </div>
               </div>
 
-              <div class="form-group">
-                <label class="form-label">{{ trans.customHead }}</label>
-                <textarea v-model="settings.custom_head" class="form-textarea" rows="3" placeholder="<link rel='stylesheet' href='...'">
-                </textarea>
-              </div>
+              <div class="form-row">
+                <div class="form-group flex-1">
+                  <label class="form-label">{{ trans.customHead }}</label>
+                  <textarea v-model="settings.custom_head" class="form-textarea" rows="3" placeholder="<link rel='stylesheet' href='...'">
+                  </textarea>
+                </div>
 
-              <div class="form-group">
-                <label class="form-label">{{ trans.customScript }}</label>
-                <textarea v-model="settings.custom_script" class="form-textarea" rows="4" placeholder="console.log('Hello');">
-                </textarea>
+                <div class="form-group flex-1">
+                  <label class="form-label">{{ trans.customScript }}</label>
+                  <textarea v-model="settings.custom_script" class="form-textarea" rows="4" placeholder="console.log('Hello');">
+                  </textarea>
+                </div>
               </div>
             </div>
 
@@ -210,65 +214,80 @@
               <div class="settings-section mb-5">
                 <div class="section-title"><span>▸</span> {{ trans.displayOptions }}</div>
 
-                <div class="checkbox-item">
-                  <input type="checkbox" id="cfg_is_public" v-model="settings.is_public">
-                  <label><b>{{ trans.publicAccess }}</b></label>
+                <div class="form-row">
+                  <div class="form-group flex-1 checkbox-item">
+                    <input type="checkbox" id="cfg_is_public" v-model="settings.is_public">
+                    <label><b>{{ trans.publicAccess }}</b></label>
+                  </div>
+
+                  <div class="form-group flex-1 checkbox-item">
+                    <input type="checkbox" id="cfg_show_price" v-model="settings.show_price">
+                    <label>{{ trans.showPrice }}</label>
+                  </div>
+
+                  <div class="form-group flex-1 checkbox-item">
+                    <input type="checkbox" id="cfg_show_expire" v-model="settings.show_expire">
+                    <label>{{ trans.showExpire }}</label>
+                  </div>
                 </div>
 
-                <div class="checkbox-item">
-                  <input type="checkbox" id="cfg_show_price" v-model="settings.show_price">
-                  <label>{{ trans.showPrice }}</label>
-                </div>
 
-                <div class="checkbox-item">
-                  <input type="checkbox" id="cfg_show_expire" v-model="settings.show_expire">
-                  <label>{{ trans.showExpire }}</label>
-                </div>
+                <div class="form-row">
+                  <div class="form-group flex-1 checkbox-item">
+                    <input type="checkbox" id="cfg_show_bw" v-model="settings.show_bw">
+                    <label>{{ trans.showBw }}</label>
+                  </div>
 
-                <div class="checkbox-item">
-                  <input type="checkbox" id="cfg_show_bw" v-model="settings.show_bw">
-                  <label>{{ trans.showBw }}</label>
-                </div>
+                  <div class="form-group flex-1 checkbox-item">
+                    <input type="checkbox" id="cfg_show_tf" v-model="settings.show_tf">
+                    <label>{{ trans.showTf }}</label>
+                  </div>
 
-                <div class="checkbox-item">
-                  <input type="checkbox" id="cfg_show_tf" v-model="settings.show_tf">
-                  <label>{{ trans.showTf }}</label>
-                </div>
-
-                <div class="checkbox-item">
-                  <input type="checkbox" id="cfg_show_long_history" v-model="settings.show_long_history">
-                  <label>{{ trans.showLongHistory }} <span class="text-muted text-sm">{{ trans.showLongHistoryTip }}</span></label>
+                  <div class="form-group flex-1 checkbox-item">
+                    <input type="checkbox" id="cfg_show_long_history" v-model="settings.show_long_history">
+                    <label>{{ trans.showLongHistory }} <span class="text-muted text-sm">{{ trans.showLongHistoryTip }}</span></label>
+                  </div>
                 </div>
               </div>
 
               <div class="settings-section">
                 <div class="section-title"><span>▸</span> {{ trans.notifications }}</div>
+                <div class="form-row">
+                  <div class="form-group flex-1">
+                    <label class="form-label">{{ trans.offlineAlert }}</label>
+                    <select v-model="settings.tg_notify" class="form-select">
+                      <option value="false">[OFF] {{ trans.disabled }}</option>
+                      <option value="true">[ON] {{ trans.notifyOffline }}</option>
+                    </select>
+                  </div>
 
-                <div class="form-group">
-                  <label class="form-label">{{ trans.offlineAlert }}</label>
-                  <select v-model="settings.tg_notify" class="form-select">
-                    <option value="false">[OFF] {{ trans.disabled }}</option>
-                    <option value="true">[ON] {{ trans.notifyOffline }}</option>
-                  </select>
-                </div>
-
-                <div class="form-group">
-                  <label class="form-label">{{ trans.telegramToken }}</label>
-                  <div class="password-input-wrapper">
-                    <input :type="passwordVisible.tgBotToken ? 'text' : 'password'" name="tg_bot_token" autocomplete="off" v-model="settings.tg_bot_token" class="form-input" placeholder="Bot Token or Webhook URL">
-                    <button type="button" class="password-toggle" @click="togglePassword('tgBotToken')">
-                      {{ passwordVisible.tgBotToken ? '🙈' : '👁️' }}
-                    </button>
+                  <div class="form-group flex-1">
+                    <label class="form-label">{{ trans.expireReminder }}</label>
+                    <select v-model="settings.expire_reminder" class="form-select">
+                      <option value="false">[OFF] {{ trans.disabled }}</option>
+                      <option value="true">[ON] {{ trans.notifyExpire }}</option>
+                    </select>
                   </div>
                 </div>
+                <div class="form-row">
+                  <div class="form-group flex-1">
+                    <label class="form-label">{{ trans.telegramToken }}</label>
+                    <div class="password-input-wrapper">
+                      <input :type="passwordVisible.tgBotToken ? 'text' : 'password'" name="tg_bot_token" autocomplete="off" v-model="settings.tg_bot_token" class="form-input" placeholder="Bot Token or Webhook URL">
+                      <button type="button" class="password-toggle" @click="togglePassword('tgBotToken')">
+                        {{ passwordVisible.tgBotToken ? '🙈' : '👁️' }}
+                      </button>
+                    </div>
+                  </div>
 
-                <div class="form-group">
-                  <label class="form-label">{{ trans.chatId }}</label>
-                  <div class="password-input-wrapper">
-                    <input :type="passwordVisible.tgChatId ? 'text' : 'password'" name="tg_chat_id" autocomplete="off" v-model="settings.tg_chat_id" class="form-input" placeholder="Telegram Chat ID (optional for WeChat)">
-                    <button type="button" class="password-toggle" @click="togglePassword('tgChatId')">
-                      {{ passwordVisible.tgChatId ? '🙈' : '👁️' }}
-                    </button>
+                  <div class="form-group flex-1">
+                    <label class="form-label">{{ trans.chatId }}</label>
+                    <div class="password-input-wrapper">
+                      <input :type="passwordVisible.tgChatId ? 'text' : 'password'" name="tg_chat_id" autocomplete="off" v-model="settings.tg_chat_id" class="form-input" placeholder="Telegram Chat ID (optional for WeChat)">
+                      <button type="button" class="password-toggle" @click="togglePassword('tgChatId')">
+                        {{ passwordVisible.tgChatId ? '🙈' : '👁️' }}
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -281,19 +300,21 @@
                 <input type="checkbox" id="cfg_turnstile_enabled" v-model="settings.turnstile_enabled">
                 <label><b>{{ trans.enableTurnstile }}</b></label>
               </div>
+              
+              <div class="form-row">
+                <div class="form-group flex-1">
+                  <label class="form-label">{{ trans.turnstileSiteKey }}</label>
+                  <input type="text" name="turnstile_site_key" autocomplete="off" v-model="settings.turnstile_site_key" class="form-input" :placeholder="trans.turnstileSiteKeyPlaceholder">
+                </div>
 
-              <div class="form-group">
-                <label class="form-label">{{ trans.turnstileSiteKey }}</label>
-                <input type="text" name="turnstile_site_key" autocomplete="off" v-model="settings.turnstile_site_key" class="form-input" :placeholder="trans.turnstileSiteKeyPlaceholder">
-              </div>
-
-              <div class="form-group">
-                <label class="form-label">{{ trans.turnstileSecretKey }}</label>
-                <div class="password-input-wrapper">
-                  <input :type="passwordVisible.turnstileSecret ? 'text' : 'password'" name="turnstile_secret_key" autocomplete="off" v-model="settings.turnstile_secret_key" class="form-input" :placeholder="trans.turnstileSecretKeyPlaceholder">
-                  <button type="button" class="password-toggle" @click="togglePassword('turnstileSecret')">
-                    {{ passwordVisible.turnstileSecret ? '🙈' : '👁️' }}
-                  </button>
+                <div class="form-group flex-1">
+                  <label class="form-label">{{ trans.turnstileSecretKey }}</label>
+                  <div class="password-input-wrapper">
+                    <input :type="passwordVisible.turnstileSecret ? 'text' : 'password'" name="turnstile_secret_key" autocomplete="off" v-model="settings.turnstile_secret_key" class="form-input" :placeholder="trans.turnstileSecretKeyPlaceholder">
+                    <button type="button" class="password-toggle" @click="togglePassword('turnstileSecret')">
+                      {{ passwordVisible.turnstileSecret ? '🙈' : '👁️' }}
+                    </button>
+                  </div>
                 </div>
               </div>
 
@@ -320,30 +341,36 @@
 
             <div class="settings-section">
               <div class="section-title"><span>▸</span> {{ trans.cloudflareSettings }}</div>
+              
+              <div class="form-row">
+                <div class="form-group flex-1">
+                  <label class="form-label">{{ trans.cloudflareAccountId }}</label>
+                  <input type="text" name="cloudflare_account_id" autocomplete="off" v-model="settings.cloudflare_account_id" class="form-input" :placeholder="trans.cloudflareAccountIdPlaceholder">
+                </div>
 
-              <div class="form-group">
-                <label class="form-label">{{ trans.cloudflareAccountId }}</label>
-                <input type="text" name="cloudflare_account_id" autocomplete="off" v-model="settings.cloudflare_account_id" class="form-input" :placeholder="trans.cloudflareAccountIdPlaceholder">
-              </div>
-
-              <div class="form-group">
-                <label class="form-label">Cloudflare API Token</label>
-                <div class="password-input-wrapper">
-                  <input :type="passwordVisible.cloudflareToken ? 'text' : 'password'" name="cloudflare_token" autocomplete="off" v-model="settings.cloudflare_token" class="form-input" :placeholder="trans.cloudflareTokenPlaceholder">
-                  <button type="button" class="password-toggle" @click="togglePassword('cloudflareToken')">
-                    {{ passwordVisible.cloudflareToken ? '🙈' : '👁️' }}
-                  </button>
+                <div class="form-group flex-1">
+                  <label class="form-label">Cloudflare API Token</label>
+                  <div class="password-input-wrapper">
+                    <input :type="passwordVisible.cloudflareToken ? 'text' : 'password'" name="cloudflare_token" autocomplete="off" v-model="settings.cloudflare_token" class="form-input" :placeholder="trans.cloudflareTokenPlaceholder">
+                    <button type="button" class="password-toggle" @click="togglePassword('cloudflareToken')">
+                      {{ passwordVisible.cloudflareToken ? '🙈' : '👁️' }}
+                    </button>
+                  </div>
                 </div>
               </div>
 
-              <p class="text-muted text-sm mt-2">
-                <span class="warning-icon">[i]</span> 
-                {{ trans.cloudflareTokenTip }}
-              </p>
-
-              <div class="form-group mt-4">
-                <button @click="queryD1Usage" class="btn btn-primary btn-lg" :disabled="d1UsageLoading">{{ d1UsageLoading ? '⏳' : '🔍' }} {{ trans.queryD1Quota }}</button>
+              <div class="form-row">
+                <div class="form-group  flex-1">
+                  <button @click="queryD1Usage" class="btn btn-primary btn-lg" :disabled="d1UsageLoading">{{ d1UsageLoading ? '⏳' : '🔍' }} {{ trans.queryD1Quota }}</button>
+                </div>
+                <div class="form-group  flex-1">
+                  <p class="text-muted text-sm mt-2">
+                    <span class="warning-icon">[i]</span> 
+                    {{ trans.cloudflareTokenTip }}
+                  </p>
+                </div>
               </div>
+
             </div>
 
             <div class="settings-section">
@@ -354,23 +381,25 @@
                 <input type="text" name="admin_username" autocomplete="username" v-model="settings.username" class="form-input" :placeholder="trans.usernamePlaceholder">
               </div>
 
-              <div class="form-group">
-                <label class="form-label">{{ trans.password }}</label>
-                <div class="password-input-wrapper">
-                  <input :type="passwordVisible.password ? 'text' : 'password'" name="admin_password" autocomplete="new-password" v-model="settings.password" class="form-input" placeholder="••••••••">
-                  <button type="button" class="password-toggle" @click="togglePassword('password')">
-                    {{ passwordVisible.password ? '🙈' : '👁️' }}
-                  </button>
+              <div class="form-row">
+                <div class="form-group flex-1">
+                  <label class="form-label">{{ trans.password }}</label>
+                  <div class="password-input-wrapper">
+                    <input :type="passwordVisible.password ? 'text' : 'password'" name="admin_password" autocomplete="new-password" v-model="settings.password" class="form-input" placeholder="••••••••">
+                    <button type="button" class="password-toggle" @click="togglePassword('password')">
+                      {{ passwordVisible.password ? '🙈' : '👁️' }}
+                    </button>
+                  </div>
                 </div>
-              </div>
 
-              <div class="form-group">
-                <label class="form-label">{{ trans.confirmPassword }}</label>
-                <div class="password-input-wrapper">
-                  <input :type="passwordVisible.confirmPassword ? 'text' : 'password'" name="admin_confirm_password" autocomplete="new-password" v-model="settings.confirm_password" class="form-input" placeholder="••••••••">
-                  <button type="button" class="password-toggle" @click="togglePassword('confirmPassword')">
-                    {{ passwordVisible.confirmPassword ? '🙈' : '👁️' }}
-                  </button>
+                <div class="form-group flex-1">
+                  <label class="form-label">{{ trans.confirmPassword }}</label>
+                  <div class="password-input-wrapper">
+                    <input :type="passwordVisible.confirmPassword ? 'text' : 'password'" name="admin_confirm_password" autocomplete="new-password" v-model="settings.confirm_password" class="form-input" placeholder="••••••••">
+                    <button type="button" class="password-toggle" @click="togglePassword('confirmPassword')">
+                      {{ passwordVisible.confirmPassword ? '🙈' : '👁️' }}
+                    </button>
+                  </div>
                 </div>
               </div>
 
@@ -383,24 +412,27 @@
             <div class="settings-section">
               <div class="section-title"><span>▸</span> {{ trans.pingNodes }}</div>
               
-              <div class="form-group">
-                <label class="form-label">{{ trans.customCt }}</label>
-                <input type="text" v-model="settings.custom_ct" class="form-input" placeholder="gd-ct-dualstack.ip.zstaticcdn.com">
-              </div>
+              <div class="form-row">
+                <div class="form-group flex-1">
+                  <label class="form-label">{{ trans.customCt }}</label>
+                  <input type="text" v-model="settings.custom_ct" class="form-input" placeholder="gd-ct-dualstack.ip.zstaticcdn.com">
+                </div>
 
-              <div class="form-group">
-                <label class="form-label">{{ trans.customCu }}</label>
-                <input type="text" v-model="settings.custom_cu" class="form-input" placeholder="gd-cu-dualstack.ip.zstaticcdn.com">
+                <div class="form-group flex-1">
+                  <label class="form-label">{{ trans.customCu }}</label>
+                  <input type="text" v-model="settings.custom_cu" class="form-input" placeholder="gd-cu-dualstack.ip.zstaticcdn.com">
+                </div>
               </div>
+              <div class="form-row">
+                <div class="form-group flex-1">
+                  <label class="form-label">{{ trans.customCm }}</label>
+                  <input type="text" v-model="settings.custom_cm" class="form-input" placeholder="gd-cm-dualstack.ip.zstaticcdn.com">
+                </div>
 
-              <div class="form-group">
-                <label class="form-label">{{ trans.customCm }}</label>
-                <input type="text" v-model="settings.custom_cm" class="form-input" placeholder="gd-cm-dualstack.ip.zstaticcdn.com">
-              </div>
-
-              <div class="form-group">
-                <label class="form-label">{{ trans.customBd }}</label>
-                <input type="text" v-model="settings.custom_bd" class="form-input" placeholder="lf3-ips.zstaticcdn.com">
+                <div class="form-group flex-1">
+                  <label class="form-label">{{ trans.customBd }}</label>
+                  <input type="text" v-model="settings.custom_bd" class="form-input" placeholder="lf3-ips.zstaticcdn.com">
+                </div>
               </div>
             </div>
           </div>
@@ -713,42 +745,74 @@
           </div>
 
           <div v-if="d1UsageResult.success" class="mb-4">
-            <div class="quota-progress-list">
-              <div class="quota-progress-item">
-                <div class="flex-justify-between text-sm mb-1">
-                  <span>{{ trans.d1RowsRead }}：{{ formatNumber(d1UsageResult.usage.rowsRead) }} / {{ formatNumber(d1UsageResult.usage.readLimit) }}</span>
-                  <span>{{ getUsagePercent(d1UsageResult.usage.rowsRead, d1UsageResult.usage.readLimit) }}%</span>
+            <div class="quota-section">
+              <div class="quota-section-title">{{ trans.todayUsage }}</div>
+              <div class="quota-progress-list">
+                <div class="quota-progress-item">
+                  <div class="flex-justify-between text-sm mb-1">
+                    <span>{{ trans.d1RowsRead }}：{{ formatNumber(d1UsageResult.usage.today.rowsRead) }} / {{ formatNumber(d1UsageResult.usage.today.readLimit) }}</span>
+                    <span>{{ getUsagePercent(d1UsageResult.usage.today.rowsRead, d1UsageResult.usage.today.readLimit) }}%</span>
+                  </div>
+                  <div class="quota-progress-bar">
+                    <div class="quota-progress-fill" :style="{ width: getUsagePercent(d1UsageResult.usage.today.rowsRead, d1UsageResult.usage.today.readLimit) + '%' }"></div>
+                  </div>
                 </div>
-                <div class="quota-progress-bar">
-                  <div class="quota-progress-fill" :style="{ width: getUsagePercent(d1UsageResult.usage.rowsRead, d1UsageResult.usage.readLimit) + '%' }"></div>
+                <div class="quota-progress-item">
+                  <div class="flex-justify-between text-sm mb-1">
+                    <span>{{ trans.d1RowsWritten }}：{{ formatNumber(d1UsageResult.usage.today.rowsWritten) }} / {{ formatNumber(d1UsageResult.usage.today.writeLimit) }}</span>
+                    <span>{{ getUsagePercent(d1UsageResult.usage.today.rowsWritten, d1UsageResult.usage.today.writeLimit) }}%</span>
+                  </div>
+                  <div class="quota-progress-bar">
+                    <div class="quota-progress-fill" :style="{ width: getUsagePercent(d1UsageResult.usage.today.rowsWritten, d1UsageResult.usage.today.writeLimit) + '%' }"></div>
+                  </div>
+                </div>
+                <div class="quota-progress-item">
+                  <div class="flex-justify-between text-sm mb-1">
+                    <span>{{ trans.workersRequests }}：{{ formatNumber(d1UsageResult.usage.today.workersRequests) }} / {{ formatNumber(d1UsageResult.usage.today.workersRequestLimit) }}</span>
+                    <span>{{ getUsagePercent(d1UsageResult.usage.today.workersRequests, d1UsageResult.usage.today.workersRequestLimit) }}%</span>
+                  </div>
+                  <div class="quota-progress-bar">
+                    <div class="quota-progress-fill" :style="{ width: getUsagePercent(d1UsageResult.usage.today.workersRequests, d1UsageResult.usage.today.workersRequestLimit) + '%' }"></div>
+                  </div>
                 </div>
               </div>
+              <p class="text-secondary text-sm line-height-1-6 mt-3">
+                {{ trans.d1UsageDate }}：{{ d1UsageResult.usage.today.date }} (UTC+0)
+              </p>
+            </div>
 
-              <div class="quota-progress-item">
-                <div class="flex-justify-between text-sm mb-1">
-                  <span>{{ trans.d1RowsWritten }}：{{ formatNumber(d1UsageResult.usage.rowsWritten) }} / {{ formatNumber(d1UsageResult.usage.writeLimit) }}</span>
-                  <span>{{ getUsagePercent(d1UsageResult.usage.rowsWritten, d1UsageResult.usage.writeLimit) }}%</span>
+            <div class="quota-section mt-4">
+              <div class="quota-section-title">{{ trans.last24HoursUsage }}</div>
+              <div class="quota-progress-list">
+                <div class="quota-progress-item">
+                  <div class="flex-justify-between text-sm mb-1">
+                    <span>{{ trans.d1RowsRead }}：{{ formatNumber(d1UsageResult.usage.last24Hours.rowsRead) }} / {{ formatNumber(d1UsageResult.usage.last24Hours.readLimit) }}</span>
+                    <span>{{ getUsagePercent(d1UsageResult.usage.last24Hours.rowsRead, d1UsageResult.usage.last24Hours.readLimit) }}%</span>
+                  </div>
+                  <div class="quota-progress-bar">
+                    <div class="quota-progress-fill" :style="{ width: getUsagePercent(d1UsageResult.usage.last24Hours.rowsRead, d1UsageResult.usage.last24Hours.readLimit) + '%' }"></div>
+                  </div>
                 </div>
-                <div class="quota-progress-bar">
-                  <div class="quota-progress-fill" :style="{ width: getUsagePercent(d1UsageResult.usage.rowsWritten, d1UsageResult.usage.writeLimit) + '%' }"></div>
+                <div class="quota-progress-item">
+                  <div class="flex-justify-between text-sm mb-1">
+                    <span>{{ trans.d1RowsWritten }}：{{ formatNumber(d1UsageResult.usage.last24Hours.rowsWritten) }} / {{ formatNumber(d1UsageResult.usage.last24Hours.writeLimit) }}</span>
+                    <span>{{ getUsagePercent(d1UsageResult.usage.last24Hours.rowsWritten, d1UsageResult.usage.last24Hours.writeLimit) }}%</span>
+                  </div>
+                  <div class="quota-progress-bar">
+                    <div class="quota-progress-fill" :style="{ width: getUsagePercent(d1UsageResult.usage.last24Hours.rowsWritten, d1UsageResult.usage.last24Hours.writeLimit) + '%' }"></div>
+                  </div>
                 </div>
-              </div>
-
-              <div class="quota-progress-item">
-                <div class="flex-justify-between text-sm mb-1">
-                  <span>{{ trans.workersRequests }}：{{ formatNumber(d1UsageResult.usage.workersRequests) }} / {{ formatNumber(d1UsageResult.usage.workersRequestLimit) }}</span>
-                  <span>{{ getUsagePercent(d1UsageResult.usage.workersRequests, d1UsageResult.usage.workersRequestLimit) }}%</span>
-                </div>
-                <div class="quota-progress-bar">
-                  <div class="quota-progress-fill" :style="{ width: getUsagePercent(d1UsageResult.usage.workersRequests, d1UsageResult.usage.workersRequestLimit) + '%' }"></div>
+                <div class="quota-progress-item">
+                  <div class="flex-justify-between text-sm mb-1">
+                    <span>{{ trans.workersRequests }}：{{ formatNumber(d1UsageResult.usage.last24Hours.workersRequests) }} / {{ formatNumber(d1UsageResult.usage.last24Hours.workersRequestLimit) }}</span>
+                    <span>{{ getUsagePercent(d1UsageResult.usage.last24Hours.workersRequests, d1UsageResult.usage.last24Hours.workersRequestLimit) }}%</span>
+                  </div>
+                  <div class="quota-progress-bar">
+                    <div class="quota-progress-fill" :style="{ width: getUsagePercent(d1UsageResult.usage.last24Hours.workersRequests, d1UsageResult.usage.last24Hours.workersRequestLimit) + '%' }"></div>
+                  </div>
                 </div>
               </div>
             </div>
-
-            <p class="text-secondary text-sm line-height-1-6 mt-4">
-              {{ trans.d1UsageDate }}：{{ d1UsageResult.usage.date }} ({{ d1UsageResult.usage.timezone }})<br>
-              {{ trans.d1NextReset }}：{{ formatUtcDateTime(d1UsageResult.usage.nextResetAt) }} ({{ d1UsageResult.usage.timezone }})
-            </p>
           </div>
 
           <div v-else class="danger-box mb-4">
@@ -820,6 +884,7 @@ const settings = ref({
   show_tf: true,
   show_long_history: false,
   tg_notify: 'false',
+  expire_reminder: 'false',
   tg_bot_token: '',
   tg_chat_id: '',
   turnstile_enabled: false,
@@ -1026,6 +1091,7 @@ const loadSettings = async () => {
         show_tf: settingsData.show_tf === 'true',
         show_long_history: settingsData.show_long_history === 'true',
         tg_notify: settingsData.tg_notify || 'false',
+        expire_reminder: settingsData.expire_reminder || 'false',
         tg_bot_token: settingsData.tg_bot_token || '',
         tg_chat_id: settingsData.tg_chat_id || '',
         turnstile_enabled: settingsData.turnstile_enabled === 'true',
@@ -1091,6 +1157,7 @@ const saveSettings = async () => {
         show_tf: settings.value.show_tf ? 'true' : 'false',
         show_long_history: settings.value.show_long_history ? 'true' : 'false',
         tg_notify: settings.value.tg_notify,
+        expire_reminder: settings.value.expire_reminder,
         tg_bot_token: settings.value.tg_bot_token,
         tg_chat_id: settings.value.tg_chat_id,
         turnstile_enabled: settings.value.turnstile_enabled ? 'true' : 'false',

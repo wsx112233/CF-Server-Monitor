@@ -60,8 +60,18 @@ function getUtcTodayRange() {
     start: start.toISOString().slice(0, 10),
     end: end.toISOString().slice(0, 10),
     startTime: start.toISOString(),
-    endTime: end.toISOString(),
-    nextResetAt: new Date(start.getTime() + 86400000).toISOString()
+    endTime: end.toISOString()
+  };
+}
+
+function getLast24HoursRange() {
+  const now = new Date();
+  const end = now;
+  const start = new Date(now.getTime() - 86400000);
+  return {
+    date: start.toISOString().slice(0, 10) + ' ~ ' + end.toISOString().slice(0, 10),
+    startTime: start.toISOString(),
+    endTime: end.toISOString()
   };
 }
 
@@ -82,46 +92,30 @@ async function cloudflareGraphql(query, variables, token) {
   return data.data;
 }
 
-async function getD1DailyUsage(token, accountId) {
-  if (!token) {
-    throw new Error('请先配置 Cloudflare Token');
-  }
-  if (!accountId) {
-    throw new Error('请先配置 Cloudflare 用户 ID / Account ID');
-  }
-
-  const range = getUtcTodayRange();
-  const query = `query CloudflareDailyUsage($accountTag: string!, $start: Date, $end: Date, $startTime: string, $endTime: string) {
+async function fetchCloudflareUsage(token, accountId, range) {
+  const query = `query CloudflareUsage($accountTag: string!, $start: Date, $end: Date, $startTime: string, $endTime: string) {
     viewer {
       accounts(filter: { accountTag: $accountTag }) {
         d1AnalyticsAdaptiveGroups(
           limit: 10000
           filter: { date_geq: $start, date_leq: $end }
         ) {
-          sum {
-            rowsRead
-            rowsWritten
-          }
-          dimensions {
-            databaseId
-          }
+          sum { rowsRead rowsWritten }
+          dimensions { databaseId }
         }
         workersInvocationsAdaptive(
           limit: 10000
           filter: { datetime_geq: $startTime, datetime_leq: $endTime }
         ) {
-          sum {
-            requests
-          }
+          sum { requests }
         }
       }
     }
   }`;
-
   const data = await cloudflareGraphql(query, {
     accountTag: accountId,
-    start: range.start,
-    end: range.end,
+    start: range.start || range.startTime.slice(0, 10),
+    end: range.end || range.endTime.slice(0, 10),
     startTime: range.startTime,
     endTime: range.endTime
   }, token);
@@ -135,22 +129,47 @@ async function getD1DailyUsage(token, accountId) {
   const workersRequests = (account.workersInvocationsAdaptive || []).reduce((total, group) => {
     return total + Number(group.sum?.requests || 0);
   }, 0);
+  return { rowsRead: usage.rowsRead, rowsWritten: usage.rowsWritten, workersRequests, databaseCount: groups.length };
+}
+
+async function getD1DailyUsage(token, accountId) {
+  if (!token) throw new Error('请先配置 Cloudflare Token');
+  if (!accountId) throw new Error('请先配置 Cloudflare 用户 ID / Account ID');
+
+  const todayRange = getUtcTodayRange();
+  const last24Range = getLast24HoursRange();
+
+  const [todayUsage, last24Usage] = await Promise.all([
+    fetchCloudflareUsage(token, accountId, todayRange),
+    fetchCloudflareUsage(token, accountId, last24Range)
+  ]);
 
   return {
-    date: range.date,
-    timezone: 'UTC+0',
-    nextResetAt: range.nextResetAt,
-    rowsRead: usage.rowsRead,
-    rowsWritten: usage.rowsWritten,
-    readLimit: D1_DAILY_READ_LIMIT,
-    writeLimit: D1_DAILY_WRITE_LIMIT,
-    readRemaining: Math.max(D1_DAILY_READ_LIMIT - usage.rowsRead, 0),
-    writeRemaining: Math.max(D1_DAILY_WRITE_LIMIT - usage.rowsWritten, 0),
-    workersRequests,
-    workersRequestLimit: WORKERS_DAILY_REQUEST_LIMIT,
-    workersRequestRemaining: Math.max(WORKERS_DAILY_REQUEST_LIMIT - workersRequests, 0),
-    databaseCount: groups.length,
-    accountId
+    today: {
+      date: todayRange.date,
+      rowsRead: todayUsage.rowsRead,
+      rowsWritten: todayUsage.rowsWritten,
+      readLimit: D1_DAILY_READ_LIMIT,
+      writeLimit: D1_DAILY_WRITE_LIMIT,
+      readRemaining: Math.max(D1_DAILY_READ_LIMIT - todayUsage.rowsRead, 0),
+      writeRemaining: Math.max(D1_DAILY_WRITE_LIMIT - todayUsage.rowsWritten, 0),
+      workersRequests: todayUsage.workersRequests,
+      workersRequestLimit: WORKERS_DAILY_REQUEST_LIMIT,
+      workersRequestRemaining: Math.max(WORKERS_DAILY_REQUEST_LIMIT - todayUsage.workersRequests, 0),
+      databaseCount: todayUsage.databaseCount,
+      accountId
+    },
+    last24Hours: {
+      date: last24Range.date,
+      rowsRead: last24Usage.rowsRead,
+      rowsWritten: last24Usage.rowsWritten,
+      readLimit: D1_DAILY_READ_LIMIT,
+      writeLimit: D1_DAILY_WRITE_LIMIT,
+      workersRequests: last24Usage.workersRequests,
+      workersRequestLimit: WORKERS_DAILY_REQUEST_LIMIT,
+      databaseCount: last24Usage.databaseCount,
+      accountId
+    }
   };
 }
 
@@ -323,7 +342,7 @@ export async function handleAdminAPI(request, env, sys) {
       const settings = data.settings || {};
 
       const APPEARANCE_FIELDS = ['site_title', 'custom_bg', 'custom_head', 'custom_script'];
-      const SITE_FIELDS = ['is_public', 'show_price', 'show_expire', 'show_bw', 'show_tf', 'show_long_history', 'tg_notify', 'tg_bot_token', 'tg_chat_id', 'turnstile_enabled', 'turnstile_site_key', 'turnstile_secret_key', 'jwt_secret', 'username', 'password', 'cloudflare_account_id', 'cloudflare_token', 'custom_ct', 'custom_cu', 'custom_cm', 'custom_bd', 'cleanup_skip_count'];
+      const SITE_FIELDS = ['is_public', 'show_price', 'show_expire', 'show_bw', 'show_tf', 'show_long_history', 'tg_notify', 'tg_bot_token', 'tg_chat_id', 'turnstile_enabled', 'turnstile_site_key', 'turnstile_secret_key', 'jwt_secret', 'username', 'password', 'cloudflare_account_id', 'cloudflare_token', 'custom_ct', 'custom_cu', 'custom_cm', 'custom_bd', 'cleanup_skip_count', 'expire_reminder'];
 
       const appearanceOptions = {};
       for (const field of APPEARANCE_FIELDS) {

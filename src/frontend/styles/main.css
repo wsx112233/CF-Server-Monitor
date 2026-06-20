@@ -425,6 +425,12 @@ body::before {
     letter-spacing: 0.5px;
 }
 
+.btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
 .btn:hover {
     background: var(--bg-hover);
     border-color: var(--border-active);
@@ -726,6 +732,20 @@ body::before {
     background: linear-gradient(90deg, var(--accent-green), var(--accent-cyan));
     border-radius: 999px;
     transition: width 0.3s ease;
+}
+
+.quota-section {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    padding: 16px;
+}
+
+.quota-section-title {
+    font-weight: 600;
+    color: var(--accent-cyan);
+    margin-bottom: 12px;
+    font-size: 14px;
 }
 
 /* --------------------------------------------------------------------------
@@ -1811,6 +1831,7 @@ body::before {
 }
 
 .bg-preview {
+    max-width: 100%;
     max-height: 80px;
     border-radius: 4px;
     margin-top: 8px;

@@ -1,5 +1,5 @@
 import { initDatabase, monthlyCleanup, dropMetricsHistoryOld, getMetricsHistory, rebuildDatabase } from './database/schema.js';
-import { checkOfflineNodes } from './services/notification.js';
+import { checkOfflineNodes, checkExpiringServers } from './services/notification.js';
 import { updateDatabase } from './database/updateDatabase.js';
 import { handleAdminAPI } from './handlers/admin.js';
 import { serveFrontend } from './handlers/frontend.js';
@@ -325,6 +325,10 @@ export default {
       console.log('[Cron] 开始执行离线节点检测');
       await checkOfflineNodes(env.DB);
       console.log('[Cron] 离线节点检测完成');
+    } else if (cron === '0 12 * * *') {
+      console.log('[Cron] 开始执行服务器到期检测');
+      await checkExpiringServers(env.DB);
+      console.log('[Cron] 服务器到期检测完成');
     }
   }
 };
